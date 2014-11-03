@@ -4,7 +4,7 @@ thoughtpad-plugin-minifier-javascript
 [![build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
 
-A thoughtpad plugin that responds to Javascript post-compilation events. Javascript files with by minified for use in the browser.
+A thoughtpad plugin that responds to Javascript post-compilation events. Javascript files will be minified for use in the browser.
 
 ## Usage
 
