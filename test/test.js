@@ -13,7 +13,9 @@ describe("javascript minify plugin", function () {
             true.should.be.true;
         });
 
-        thoughtpad.notify("javascript-postcompile-request", { contents: "" });
+        co(function *() {
+            yield thoughtpad.notify("javascript-postcompile-request", { contents: "d", data: { fromString: true } });
+        })();
     });
 
     it("should ignore requests with no content", function () {
@@ -23,7 +25,9 @@ describe("javascript minify plugin", function () {
             true.should.be.false;
         });
 
-        thoughtpad.notify("javascript-postcompile-request", { contents: "" });
+        co(function *() {
+            yield thoughtpad.notify("javascript-postcompile-request", { contents: "" });
+        })();
     });
 
     it("should minify javascript from file", function (done) {
@@ -33,24 +37,27 @@ describe("javascript minify plugin", function () {
         thoughtpad.subscribe("javascript-postcompile-complete", function *(contents) {
             contents.code.should.equal('var a="hello";a+=" there";');
             yield fs.unlink(filename);
-            done();
+            
         });
 
         co(function *() {
             yield fs.writeFile(filename, "var a = 'hello';\n\na += ' there';");
-            thoughtpad.notify("javascript-postcompile-request", { contents: filename });
+            yield thoughtpad.notify("javascript-postcompile-request", { contents: filename });
+            done();
         })();
         
     });
 
-    it("should minify javascript from string", function () {
+    it("should minify javascript from string", function (done) {
         thoughtpad = man.registerPlugins([app]);
 
         thoughtpad.subscribe("javascript-postcompile-complete", function *(contents) {
             contents.code.should.equal('var a="hello";a+=" there";');
         });
 
-        thoughtpad.notify("javascript-postcompile-request", { contents: "var a = 'hello';\n\na += ' there';", data: { fromString: true } });
-        
+        co(function *() {
+            yield thoughtpad.notify("javascript-postcompile-request", { contents: "var a = 'hello';\n\na += ' there';", data: { fromString: true } });
+            done();
+        })();
     });
 });
