@@ -31,11 +31,13 @@ describe("javascript minify plugin", function () {
     });
 
     it("should minify javascript from file", function (done) {
-        var filename = __dirname + '/file.js';
+        var filename = __dirname + '/file.js',
+            contents = "";
+
         thoughtpad = man.registerPlugins([app]);
 
-        thoughtpad.subscribe("javascript-postcompile-complete", function *(contents) {
-            contents.code.should.equal('var a="hello";a+=" there";');
+        thoughtpad.subscribe("javascript-postcompile-complete", function *(res) {
+            contents = res.contents;
             yield fs.unlink(filename);
             
         });
@@ -43,20 +45,27 @@ describe("javascript minify plugin", function () {
         co(function *() {
             yield fs.writeFile(filename, "var a = 'hello';\n\na += ' there';");
             yield thoughtpad.notify("javascript-postcompile-request", { contents: filename });
+            contents.should.equal('var a="hello";a+=" there";');
             done();
         })();
         
     });
 
     it("should minify javascript from string", function (done) {
+        var contents = "",
+            name = "";
+
         thoughtpad = man.registerPlugins([app]);
 
-        thoughtpad.subscribe("javascript-postcompile-complete", function *(contents) {
-            contents.code.should.equal('var a="hello";a+=" there";');
+        thoughtpad.subscribe("javascript-postcompile-complete", function *(res) {
+            contents = res.contents;
+            name = res.name;
         });
 
         co(function *() {
-            yield thoughtpad.notify("javascript-postcompile-request", { contents: "var a = 'hello';\n\na += ' there';", data: { fromString: true } });
+            yield thoughtpad.notify("javascript-postcompile-request", { contents: "var a = 'hello';\n\na += ' there';", data: { fromString: true }, name: 'hello' });
+            contents.should.equal('var a="hello";a+=" there";');
+            name.should.equal('hello');
             done();
         })();
     });

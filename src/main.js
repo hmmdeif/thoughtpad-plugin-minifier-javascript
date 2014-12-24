@@ -9,7 +9,7 @@ var init = function (thoughtpad) {
 compile = function *(obj) {
     if (!obj.contents) return;
 
-    yield _thoughtpad.notify("javascript-postcompile-complete", uglify.minify(obj.contents, obj.data));
+    yield _thoughtpad.notify("javascript-postcompile-complete", { contents: uglify.minify(obj.contents, obj.data).code, name: obj.name });
 };
 
 module.exports = {
