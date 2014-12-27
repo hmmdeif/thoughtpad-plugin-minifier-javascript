@@ -42,6 +42,12 @@ describe("javascript minify plugin", function () {
             
         });
 
+        thoughtpad.config = {
+            eventData: {
+                'javascript-postcompile': {}
+            }
+        };
+
         co(function *() {
             yield fs.writeFile(filename, "var a = 'hello';\n\na += ' there';");
             yield thoughtpad.notify("javascript-postcompile-request", { contents: filename });
@@ -63,7 +69,7 @@ describe("javascript minify plugin", function () {
         });
 
         co(function *() {
-            yield thoughtpad.notify("javascript-postcompile-request", { contents: "var a = 'hello';\n\na += ' there';", data: { fromString: true }, name: 'hello' });
+            yield thoughtpad.notify("javascript-postcompile-request", { contents: "var a = 'hello';\n\na += ' there';", name: 'hello' });
             contents.should.equal('var a="hello";a+=" there";');
             name.should.equal('hello');
             done();
