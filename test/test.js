@@ -6,7 +6,7 @@ var should = require('should'),
     thoughtpad;
 
 describe("javascript minify plugin", function () {
-    it("should register correctly to events", function () {
+    it("should register correctly to events", function (done) {
         thoughtpad = man.registerPlugins([app]);
 
         thoughtpad.subscribe("javascript-postcompile-complete", function *() {
@@ -15,10 +15,11 @@ describe("javascript minify plugin", function () {
 
         co(function *() {
             yield thoughtpad.notify("javascript-postcompile-request", { contents: "d", data: { fromString: true } });
-        })();
+            done();
+        }).catch(done);
     });
 
-    it("should ignore requests with no content", function () {
+    it("should ignore requests with no content", function (done) {
         thoughtpad = man.registerPlugins([app]);
 
         thoughtpad.subscribe("javascript-postcompile-complete", function *() {
@@ -27,7 +28,8 @@ describe("javascript minify plugin", function () {
 
         co(function *() {
             yield thoughtpad.notify("javascript-postcompile-request", { contents: "" });
-        })();
+            done();
+        }).catch(done);
     });
 
     it("should minify javascript from file", function (done) {
@@ -53,7 +55,7 @@ describe("javascript minify plugin", function () {
             yield thoughtpad.notify("javascript-postcompile-request", { contents: filename });
             contents.should.equal('var a="hello";a+=" there";');
             done();
-        })();
+        }).catch(done);
         
     });
 
@@ -73,6 +75,6 @@ describe("javascript minify plugin", function () {
             contents.should.equal('var a="hello";a+=" there";');
             name.should.equal('hello');
             done();
-        })();
+        }).catch(done);
     });
 });
